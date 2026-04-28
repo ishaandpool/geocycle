@@ -20,7 +20,7 @@ export default function Index() {
 
   return (
       <View style={styles.container}>
-        <Text style={styles.header}>Welcome to EcoSense!</Text>
+        <Text style={styles.header}>Welcome to GeoCycle!</Text>
         <Image
           style={{ width: 200, height: 200 }}
           source={require('@/assets/images/leaves.png')}

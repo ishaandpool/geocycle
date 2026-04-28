@@ -82,7 +82,7 @@ const index = () => {
     return (
         <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
             <SafeAreaView style={styles.container}>
-                <Text style={styles.title}>Welcome to EcoSense!</Text>
+                <Text style={styles.title}>Welcome to GeoCycle!</Text>
                 <Image
                     style={{ width: 200, height: 200 }}
                     source={require('@/assets/images/leaves.png')}

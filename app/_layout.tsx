@@ -9,7 +9,7 @@ function LogoTitle() {
         style={{ width: 50, height: 50 }}
         source={require('@/assets/images/leaves.png')}
       />
-      <Text style={{color:'white'}}>EcoSense</Text>
+      <Text style={{color:'white'}}>GeoCycle</Text>
     </View>
   );
 }

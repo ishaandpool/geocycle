@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, View, StyleSheet, Dimensions, Image, Platform, Pressable } from 'react-native';
 import { Card, Text, ActivityIndicator, MD2Colors } from 'react-native-paper';
 import { useRouter } from 'expo-router';
+import { API_BASE_URL } from '@/constants/api';
 
 const { height, width } = Dimensions.get('window');
 
@@ -14,7 +15,7 @@ const NewsDashboard = () => {
 
   useEffect(() => {
     //
-    fetch('https://congressionalappserver.vercel.app/news')
+    fetch(`${API_BASE_URL}/news`)
       .then((response) => response.json())
       .then((data) => {
         setNewsData(data.articles);

@@ -3,14 +3,14 @@ import { View, StyleSheet, ScrollView, Platform } from 'react-native';
 import { Text, ActivityIndicator, MD2Colors } from 'react-native-paper';
 import { useLocalSearchParams } from 'expo-router';
 import Markdown from 'react-native-markdown-display';
+import { API_BASE_URL } from '@/constants/api';
 export default function NewsArticle() {
   const { uri } = useLocalSearchParams();
   const [articleData, setArticleData]: any = useState(null);
   const [loading, setLoading] = useState(true);   
   
   useEffect(() => {
-    //https://congressionalappserver.vercel.app/article
-    fetch(`https://congressionalappserver.vercel.app/article?uri=${uri}`)
+    fetch(`${API_BASE_URL}/article?uri=${uri}`)
       .then((response) => response.text())
       .then((data: any) => {        
         setArticleData(data);

@@ -5,7 +5,8 @@
   import { readAsStringAsync, EncodingType } from 'expo-file-system';
   //@ts-ignore
   import BottomSheet from 'react-native-simple-bottom-sheet';
-  import { Modal, Portal, Text, Button, ActivityIndicator, MD2Colors } from 'react-native-paper';   
+  import { Modal, Portal, Text, Button, ActivityIndicator, MD2Colors } from 'react-native-paper';
+  import { API_BASE_URL } from '@/constants/api';
 
   function potentialJSON(textBlob) {
     // 1. Input Validation
@@ -96,7 +97,7 @@
       else
         parsed = photo.base64;
         try {
-          const response = await fetch('https://congressionalappserver.vercel.app/upload', {
+          const response = await fetch(`${API_BASE_URL}/upload`, {
             method: 'POST',
             headers: {
               'Content-Type': 'text/plain',

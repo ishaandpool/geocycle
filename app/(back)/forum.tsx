@@ -5,6 +5,7 @@
   import { Modal, Portal } from 'react-native-paper';
   import { auth } from '../../FirebaseConfig'; // Import Firebase Auth
   import { onAuthStateChanged } from 'firebase/auth';
+  import { API_BASE_URL } from '@/constants/api';
 
   const { width, height } = Dimensions.get('window');
 
@@ -199,7 +200,7 @@
     const fetchLikedPosts = async () => {
       try {
         if (!email) return;
-        const response = await axios.get<number[]>(`https://congressionalappserver.vercel.app/likes/${email}`);
+        const response = await axios.get<number[]>(`${API_BASE_URL}/likes/${email}`);
         setLikedPosts(response.data);
       } catch (error) {
         console.error(error);
@@ -208,7 +209,7 @@
 
     const fetchPosts = async () => {
       try {
-        const response = await axios.get<PostType[]>('https://congressionalappserver.vercel.app/posts');
+        const response = await axios.get<PostType[]>('${API_BASE_URL}/posts');
         const postsWithLikes = response.data.map(post => ({
           ...post,
           hasLiked: likedPosts.includes(post.id)
@@ -224,7 +225,7 @@
       if (post) {
         const newHasLiked = !post.hasLiked;
         try {
-          await axios.post('https://congressionalappserver.vercel.app/like', { email: email, postId, newHasLiked });
+          await axios.post('${API_BASE_URL}/like', { email: email, postId, newHasLiked });
           // Update local state after liking
           setPosts(posts.map(p =>
             p.id === postId ? { ...p, hasLiked: newHasLiked, likes: newHasLiked ? p.likes + 1 : p.likes - 1 } : p
@@ -253,7 +254,7 @@
           author: userName, // Include the author's name
         };
         try {
-          await axios.post('https://congressionalappserver.vercel.app/posts', newPostObject);
+          await axios.post('${API_BASE_URL}/posts', newPostObject);
           setTimeout(async () => {
           fetchPosts();
           setNewPost('');
@@ -271,7 +272,7 @@
     const handleAddComment = async (postId: number, comment: string) => {
       if (comment.trim()) {
         try {
-          await axios.post('https://congressionalappserver.vercel.app/comment', {
+          await axios.post('${API_BASE_URL}/comment', {
             id: postId,
             comment: comment,
             author: userName
