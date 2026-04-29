@@ -102,13 +102,18 @@
           const response = await fetch(`${API_BASE_URL}/upload`, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
-            body: parsed,
+            body: JSON.stringify({ data: parsed, mimeType: 'image/jpeg' }),
             signal: controller.signal,
           });
           clearTimeout(timeout);
           const data = await response.text();
-          //@ts-ignore
-          const { recyclable, type, info } = potentialJSON(data);
+          const result = potentialJSON(data);
+          if (!result) {
+            lSetVisible(false);
+            alert('Could not read the image result. Please try again.');
+            return;
+          }
+          const { recyclable, type, info } = result;
           setRecyclable(recyclable);
           setType(type);
           setInfo(info);
