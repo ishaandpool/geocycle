@@ -107,10 +107,11 @@
           });
           clearTimeout(timeout);
           const data = await response.text();
+          console.log('Backend response:', data);
           const result = potentialJSON(data);
           if (!result) {
             lSetVisible(false);
-            alert('Could not read the image result. Please try again.');
+            alert(`Backend said: ${data.substring(0, 200)}`);
             return;
           }
           const { recyclable, type, info } = result;
