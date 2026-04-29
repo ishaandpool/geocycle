@@ -97,25 +97,27 @@
       else
         parsed = photo.base64;
         try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 30000);
           const response = await fetch(`${API_BASE_URL}/upload`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'text/plain',
-            },
-            body: parsed
-          }); 
-          const data = await response.text()
-          console.log(data)
+            headers: { 'Content-Type': 'text/plain' },
+            body: parsed,
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
+          const data = await response.text();
           //@ts-ignore
-          const { recyclable, type, info } = potentialJSON(data) ;
+          const { recyclable, type, info } = potentialJSON(data);
           setRecyclable(recyclable);
           setType(type);
           setInfo(info);
           lSetVisible(false);
           setVisible(true);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error sending image to server:', error);
           lSetVisible(false);
+          alert(error.name === 'AbortError' ? 'Request timed out. Try again.' : 'Something went wrong. Please try again.');
         }
     };
 
