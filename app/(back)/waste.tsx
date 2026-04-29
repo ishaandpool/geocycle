@@ -2,7 +2,7 @@
   import { useState, useRef } from 'react';
   import React from 'react'
   import { StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
-  import { readAsStringAsync, EncodingType } from 'expo-file-system';
+  import { readAsStringAsync } from 'expo-file-system/legacy';
   //@ts-ignore
   import BottomSheet from 'react-native-simple-bottom-sheet';
   import { Modal, Portal, Text, Button, ActivityIndicator, MD2Colors } from 'react-native-paper';
@@ -93,7 +93,7 @@
       
       if (!photo.hasOwnProperty("base64"))
         //@ts-ignore
-        parsed = await readAsStringAsync(photo.uri, { encoding: EncodingType.Base64 });
+        parsed = await readAsStringAsync(photo.uri, { encoding: 'base64' });
       else
         parsed = photo.base64;
         try {
@@ -115,6 +115,7 @@
           setVisible(true);
         } catch (error) {
           console.error('Error sending image to server:', error);
+          lSetVisible(false);
         }
     };
 
