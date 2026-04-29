@@ -102,7 +102,7 @@
           const response = await fetch(`${API_BASE_URL}/upload`, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ data: parsed, mimeType: 'image/jpeg' }),
+            body: parsed,
             signal: controller.signal,
           });
           clearTimeout(timeout);
