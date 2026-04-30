@@ -1,8 +1,9 @@
-import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView, Platform } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView, Platform, TextInput } from 'react-native';
 import { auth } from '@/FirebaseConfig';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
+import { Dialog, Portal, Button, Paragraph } from 'react-native-paper';
 
 const features = [
     { emoji: '📰', title: 'Eco News', description: 'Stay informed with the latest environmental headlines from around the world.' },
@@ -13,6 +14,13 @@ const features = [
 export default function Index() {
     const router = useRouter();
     const [userName, setUserName] = useState('');
+    const [showChangePassword, setShowChangePassword] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [dialogVisible, setDialogVisible] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
+    const [dialogSuccess, setDialogSuccess] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
@@ -25,8 +33,64 @@ export default function Index() {
         return () => unsubscribe();
     }, [router]);
 
+    const handleChangePassword = async () => {
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            setDialogMessage('Please fill in all fields.');
+            setDialogSuccess(false);
+            setDialogVisible(true);
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            setDialogMessage('New passwords do not match.');
+            setDialogSuccess(false);
+            setDialogVisible(true);
+            return;
+        }
+        if (newPassword.length < 6) {
+            setDialogMessage('New password must be at least 6 characters.');
+            setDialogSuccess(false);
+            setDialogVisible(true);
+            return;
+        }
+        try {
+            const user = getAuth().currentUser;
+            const credential = EmailAuthProvider.credential(user.email, currentPassword);
+            await reauthenticateWithCredential(user, credential);
+            await updatePassword(user, newPassword);
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+            setShowChangePassword(false);
+            setDialogMessage('Password changed successfully!');
+            setDialogSuccess(true);
+            setDialogVisible(true);
+        } catch (error: any) {
+            if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                setDialogMessage('Current password is incorrect.');
+            } else {
+                setDialogMessage('Failed to change password: ' + error.message);
+            }
+            setDialogSuccess(false);
+            setDialogVisible(true);
+        }
+    };
+
     return (
         <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
+            <Portal>
+                <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)} style={{ backgroundColor: '#1C2B14' }}>
+                    <Dialog.Title style={{ color: dialogSuccess ? '#8BC34A' : '#C9A84C', fontWeight: 'bold' }}>
+                        {dialogSuccess ? 'Success' : 'Error'}
+                    </Dialog.Title>
+                    <Dialog.Content>
+                        <Paragraph style={{ color: '#E8F0DC', fontSize: 16 }}>{dialogMessage}</Paragraph>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setDialogVisible(false)} textColor="#8BC34A" labelStyle={{ fontWeight: 'bold' }}>OK</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
+
             <View style={styles.heroSection}>
                 <Image style={{ width: 90, height: 90, marginBottom: 16 }} source={require('@/assets/images/leaves.png')} />
                 <Text style={styles.greeting}>{userName ? `Hello, ${userName} 👋` : 'Welcome back 👋'}</Text>
@@ -47,9 +111,54 @@ export default function Index() {
                 ))}
             </View>
 
-            <TouchableOpacity style={styles.signOutButton} onPress={() => auth.signOut()}>
-                <Text style={styles.signOutText}>Sign Out</Text>
-            </TouchableOpacity>
+            {showChangePassword && (
+                <View style={styles.changePasswordCard}>
+                    <Text style={styles.changePasswordTitle}>Change Password</Text>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Current Password"
+                        placeholderTextColor="#6B8A52"
+                        value={currentPassword}
+                        onChangeText={setCurrentPassword}
+                        secureTextEntry
+                    />
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="New Password"
+                        placeholderTextColor="#6B8A52"
+                        value={newPassword}
+                        onChangeText={setNewPassword}
+                        secureTextEntry
+                    />
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Confirm New Password"
+                        placeholderTextColor="#6B8A52"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        secureTextEntry
+                    />
+                    <View style={styles.buttonRow}>
+                        <TouchableOpacity style={styles.cancelButton} onPress={() => { setShowChangePassword(false); setCurrentPassword(''); setNewPassword(''); setConfirmPassword(''); }}>
+                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.saveButton} onPress={handleChangePassword}>
+                            <Text style={styles.saveButtonText}>Save</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
+            <View style={styles.accountButtons}>
+                {!showChangePassword && (
+                    <TouchableOpacity style={styles.changePasswordButton} onPress={() => setShowChangePassword(true)}>
+                        <Text style={styles.changePasswordButtonText}>Change Password</Text>
+                    </TouchableOpacity>
+                )}
+                <TouchableOpacity style={styles.signOutButton} onPress={() => auth.signOut()}>
+                    <Text style={styles.signOutText}>Sign Out</Text>
+                </TouchableOpacity>
+            </View>
 
             <Text style={styles.attribution}>Icons by Pixellez from pngtree.com</Text>
         </ScrollView>
@@ -130,8 +239,79 @@ const styles = StyleSheet.create({
         color: '#7A9B5A',
         lineHeight: 19,
     },
-    signOutButton: {
+    changePasswordCard: {
+        width: Platform.select({ web: '60%', default: '100%' }),
+        backgroundColor: '#1C2B14',
+        borderRadius: 14,
+        padding: 20,
+        marginTop: 24,
+        borderWidth: 1,
+        borderColor: '#3D5C28',
+    },
+    changePasswordTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#E8F0DC',
+        marginBottom: 16,
+    },
+    textInput: {
+        backgroundColor: '#243318',
+        borderRadius: 10,
+        padding: 14,
+        marginBottom: 12,
+        color: '#E8F0DC',
+        borderWidth: 1,
+        borderColor: '#3D5C28',
+        fontSize: 15,
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        gap: 10,
+        marginTop: 4,
+    },
+    cancelButton: {
+        flex: 1,
+        padding: 13,
+        borderRadius: 10,
+        borderWidth: 1.5,
+        borderColor: '#3D5C28',
+        alignItems: 'center',
+    },
+    cancelButtonText: {
+        color: '#6B8A52',
+        fontWeight: '600',
+        fontSize: 15,
+    },
+    saveButton: {
+        flex: 1,
+        padding: 13,
+        borderRadius: 10,
+        backgroundColor: '#5B8C35',
+        alignItems: 'center',
+    },
+    saveButtonText: {
+        color: '#fff',
+        fontWeight: '700',
+        fontSize: 15,
+    },
+    accountButtons: {
         marginTop: 32,
+        gap: 12,
+        alignItems: 'center',
+    },
+    changePasswordButton: {
+        paddingVertical: 12,
+        paddingHorizontal: 36,
+        borderRadius: 10,
+        borderWidth: 1.5,
+        borderColor: '#3D5C28',
+    },
+    changePasswordButtonText: {
+        color: '#8BC34A',
+        fontSize: 15,
+        fontWeight: '600',
+    },
+    signOutButton: {
         paddingVertical: 12,
         paddingHorizontal: 36,
         borderRadius: 10,
