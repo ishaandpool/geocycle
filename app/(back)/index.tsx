@@ -14,6 +14,11 @@ const features = [
 export default function Index() {
     const router = useRouter();
     const [userName, setUserName] = useState('');
+
+    const handleSignOut = async () => {
+        await auth.signOut();
+        router.replace('/');
+    };
     const [showChangePassword, setShowChangePassword] = useState(false);
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -54,6 +59,7 @@ export default function Index() {
         }
         try {
             const user = getAuth().currentUser;
+            if (!user || !user.email) throw new Error('Not logged in.');
             const credential = EmailAuthProvider.credential(user.email, currentPassword);
             await reauthenticateWithCredential(user, credential);
             await updatePassword(user, newPassword);
@@ -155,7 +161,7 @@ export default function Index() {
                         <Text style={styles.changePasswordButtonText}>Change Password</Text>
                     </TouchableOpacity>
                 )}
-                <TouchableOpacity style={styles.signOutButton} onPress={() => auth.signOut()}>
+                <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
                     <Text style={styles.signOutText}>Sign Out</Text>
                 </TouchableOpacity>
             </View>
