@@ -6,7 +6,7 @@ import { PaperProvider } from 'react-native-paper';
 function LogoTitle() {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-      <Image style={{ width: 32, height: 32 }} source={require('@/assets/images/leaves.png')} />
+      <Image style={{ width: 32, height: 32 }} source={require('@/assets/images/logo.png')} />
       <Text style={{ color: '#8BC34A', fontWeight: '700', fontSize: 18, letterSpacing: 1 }}>GeoCycle</Text>
     </View>
   );

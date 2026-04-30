@@ -98,7 +98,7 @@ export default function Index() {
             </Portal>
 
             <View style={styles.heroSection}>
-                <Image style={{ width: 90, height: 90, marginBottom: 16 }} source={require('@/assets/images/leaves.png')} />
+                <Image style={{ width: 90, height: 90, marginBottom: 16 }} source={require('@/assets/images/logo.png')} />
                 <Text style={styles.greeting}>{userName ? `Hello, ${userName} 👋` : 'Welcome back 👋'}</Text>
                 <Text style={styles.header}>GeoCycle</Text>
                 <Text style={styles.tagline}>Making sustainability simple, one choice at a time.</Text>

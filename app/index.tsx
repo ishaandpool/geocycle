@@ -66,7 +66,7 @@ const index = () => {
         <Animated.View style={[styles.outerContainer, { opacity: fadeAnim }]}>
             <SafeAreaView style={styles.container}>
                 <Animated.View style={[styles.card, { transform: [{ translateY: slideAnim }] }]}>
-                    <Image style={{ width: 80, height: 80, marginBottom: 12 }} source={require('@/assets/images/leaves.png')} />
+                    <Image style={{ width: 80, height: 80, marginBottom: 12 }} source={require('@/assets/images/logo.png')} />
                     <Text style={styles.title}>GeoCycle</Text>
                     <Text style={styles.subtitle}>Empowering sustainable choices</Text>
 
