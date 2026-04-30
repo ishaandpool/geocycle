@@ -204,18 +204,14 @@
           {/*@ts-ignore */}
           <CameraView style={styles.camera} facing={facing} ref={ref}>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={{ ...styles.button, borderTopLeftRadius: 10, borderBottomLeftRadius: 10 }}
-                onPress={toggleCameraFacing}
-              >
-                <Text style={styles.text}>Flip Camera&nbsp;</Text>
+              <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
+                <Text style={styles.flipIcon}>↺</Text>
+                <Text style={styles.flipLabel}>Flip</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={{ ...styles.button, borderTopRightRadius: 10, borderBottomRightRadius: 10 }}
-                onPress={takePicture}
-              >
-                <Text style={styles.text}>&nbsp;Take Picture</Text>
+              <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
+                <View style={styles.captureInner} />
               </TouchableOpacity>
+              <View style={styles.placeholder} />
             </View>
           </CameraView>
         </View>
@@ -241,21 +237,54 @@
       flex: 1,
     },
     buttonContainer: {
-      flex:1,
+      position: 'absolute',
+      bottom: 40,
+      left: 0,
+      right: 0,
       flexDirection: 'row',
-      backgroundColor: 'transparent',
-      margin: 10,
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      paddingHorizontal: 30,
     },
-      button: {
-        flex: 1,
-        alignSelf: 'flex-end',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        padding: 20,
-        marginBottom:60,
-        height:'12%'
-      },
+    flipButton: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'rgba(255,255,255,0.2)',
+      borderRadius: 50,
+      width: 60,
+      height: 60,
+      borderWidth: 1.5,
+      borderColor: 'rgba(255,255,255,0.4)',
+    },
+    flipIcon: {
+      fontSize: 22,
+      color: 'white',
+      fontWeight: 'bold',
+    },
+    flipLabel: {
+      fontSize: 10,
+      color: 'white',
+      marginTop: -2,
+    },
+    captureButton: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: 'rgba(255,255,255,0.3)',
+      borderWidth: 4,
+      borderColor: 'white',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    captureInner: {
+      width: 58,
+      height: 58,
+      borderRadius: 29,
+      backgroundColor: 'white',
+    },
+    placeholder: {
+      width: 60,
+    },
     text: {
       fontSize: 24,
       fontWeight: 'bold',
