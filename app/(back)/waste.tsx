@@ -78,7 +78,7 @@
   export default function Waste() {
     const [visible, setVisible] = useState(false);
     const [lVisible, lSetVisible] = useState(false);
-    const [recyclable, setRecyclable] = useState(null);
+    const [disposal, setDisposal] = useState('');
     const [type, setType] = useState('');
     const [info, setInfo] = useState('');
     const ref = useRef(null);
@@ -114,8 +114,8 @@
             alert(`Backend said: ${data.substring(0, 200)}`);
             return;
           }
-          const { recyclable, type, info } = result;
-          setRecyclable(recyclable);
+          const { disposal, type, info } = result;
+          setDisposal(disposal);
           setType(type);
           setInfo(info);
           lSetVisible(false);
@@ -174,19 +174,19 @@
             }}
           >
             <ScrollView>
-              {recyclable !== null && (
+              {disposal !== '' && (
                 <>
                   <Text style={{ ...styles.text, color: '#90EE90', fontSize: 40 }}>
                   {`Success!\n\n`}
                   </Text>
                   <Text style={styles.infoText}>
-                    {type   }
+                    {type}
                   </Text>
-                  <Text style={{ ...styles.infoText, color: recyclable ? 'green' : 'red' }}>
-                    {recyclable ? 'recyclable' : 'not recyclable'} {'\n\n\n'}
+                  <Text style={{ ...styles.infoText, color: disposal === 'recycling' ? '#4FC3F7' : disposal === 'compost' ? '#81C784' : '#EF9A9A' }}>
+                    {disposal === 'recycling' ? '♻️ Recycling' : disposal === 'compost' ? '🌱 Compost' : '🗑️ Trash'}{'\n\n\n'}
                   </Text>
                   <Text style={styles.infoText}>
-                    {info} {'\n\n\n'}
+                    {info}{'\n\n\n'}
                   </Text>
                 </>
               )}
